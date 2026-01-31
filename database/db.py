@@ -17,7 +17,7 @@ def init_(con,cursor):
         INSERT INTO tasks (title, description)
         VALUES (%s, %s)
         """,
-        ("learn js", "learn js before cooked",)
+        ("learn js", "learn devops before march 2026",)
     )
 
     con.commit()
@@ -25,7 +25,7 @@ def init_(con,cursor):
 def get_db():
     global init_table
     con = mysql.connector.connect(
-        host="localhost",
+        host="db",
         user="taskuser",
         password="taskpass",
         database="taskdb",

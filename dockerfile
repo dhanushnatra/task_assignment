@@ -1,9 +1,9 @@
-FROM mysql:8.0
+FROM python:3.11-alpine
 
-ENV MYSQL_ROOT_PASSWORD=root123 
-ENV MYSQL_DATABASE=taskdb 
-ENV MYSQL_USER=taskuser 
-ENV MYSQL_PASSWORD=taskpass 
+WORKDIR /app
 
+COPY . .
 
-VOLUME [ "/mysql_data" ]
+RUN pip install --no-cache-dir -r requirements.txt
+
+CMD [ "python", "app.py" ]
