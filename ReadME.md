@@ -2,6 +2,14 @@
 
 CRUD tasks
 
+## UI - Showcase
+
+<div style="display:flex;flex-direction:row;gap:12px">
+<img src='./outputs/output1.png' width='33%'>
+<img src='./outputs/output3.png' width='33%'>
+<img src='./outputs/outout2.png' width='33%'>
+</div>
+
 ## tech involved
 
 - python (flask)
