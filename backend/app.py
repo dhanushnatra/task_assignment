@@ -3,15 +3,24 @@ from flask_cors import CORS
 from flask import jsonify
 from database.dbops import create_task,delete_task,get_task,update_task,get_all_tasks
 from flask import request
+from flask import send_from_directory
 
 app = Flask(__name__)
 
 
-CORS(
-    app=app,
-    allow_headers=['*'],
-    resources={"/*": {"origins": "*", "methods": ["GET","POST","PUT","DELETE"]}}
-)
+
+CORS(app)
+
+
+@app.route('/')
+def home():
+    return send_from_directory('static', 'index.html')
+
+@app.route('/<path:path>')
+def send_static(path):
+    return send_from_directory('static', path)
+
+
 
 @app.route('/tasks', methods=['GET'])
 def get_tasks_end():
@@ -26,19 +35,23 @@ def create_task_end():
     try:
         data = dict(request.get_json())
         print(data.keys(),data.values())
-        task = create_task(title=data['title'], description=data['description'])
+        task = create_task(title=data['title'],
+                        description=data['description'])
         return jsonify({"message":"success","task":task}),201
     
     except Exception as e:
         print(e)
         return jsonify({"message":"failed"}),400
     
-@app.route('/tasks/<int:task_id>', methods=['PUT'])
+@app.route('/tasks/<int:task_id>', methods=['PATCH'])
 def update_task_end(task_id):
     try:
         data = dict(request.get_json())
         print(data)
-        update_task(task_id=task_id,title=data.get('title'),description=data.get('description'))
+        update_task(task_id=task_id,
+                    title=data.get('title',None),
+                    description=data.get('description',None),
+                    is_done=data.get('is_done',None))
         return jsonify({"message":"success","updated_task":task_id}),200
     except Exception as e:
         print(e)

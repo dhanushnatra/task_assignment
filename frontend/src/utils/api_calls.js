@@ -1,7 +1,8 @@
-import { transformWithEsbuild } from "vite";
+const baseUrl = `${import.meta.env.VITE_API_BASE_URL}/tasks`;
 
-var base_ip='localhost';
-const baseUrl = `http://${base_ip}:5000/tasks/`
+
+console.log("🔥 api_calls.js LOADED");
+
 
 const get_all_tasks= async() => {
     try{
@@ -9,6 +10,7 @@ const get_all_tasks= async() => {
             method:'GET',
         });
         if (res.ok){
+            console.log(res.body)
             return res.json()
         }
         else{
@@ -21,17 +23,48 @@ const get_all_tasks= async() => {
 }
 
 
-const add_task=async(title,description)=>{
+const toggle_task=async({task_id,is_done})=>{
     try{
-        const res = await fetch(baseUrl,{
-            method:'POST',
+        const res = await fetch(baseUrl+'/'+task_id,{
+            method:'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body:JSON.stringify(
                 {
-                    title,description
+                    is_done:is_done
                 }
             )
         });
         if (res.ok) return res.json()
+        else throw Error('error toggling task'+task_id)
+    }
+    catch (e){
+        console.log(e)
+    }
+}
+
+
+const add_task=async({title,description})=>{
+    console.log("adding task", {title, description})
+    try{
+        const res = await fetch(baseUrl,{
+            method:'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body:JSON.stringify(
+                {
+                    title:title,
+                    description:description
+                }
+            )
+        });
+        if (res.ok) {
+            const resp = await res.json()
+            console.log("Added task response:", resp['task'])
+            return resp['task']
+        }
         else throw Error('error Adding Title'+title+'description'+description)
     }
     catch (e){
@@ -42,8 +75,7 @@ const add_task=async(title,description)=>{
 
 const delete_task=async(task_id)=>{
     try{
-
-    const res = await fetch(baseUrl+task_id,{
+    const res = await fetch(baseUrl+'/'+task_id,{
         method:"DELETE"
     })
     if (res.ok) return res.json()
@@ -55,13 +87,18 @@ const delete_task=async(task_id)=>{
 }
 
 
-const update_task=async(task_id,title,description)=>{
+const update_task=async({task_id,title,description,is_done})=>{
     try{
-        const res = await fetch(baseUrl+task_id,{
-            method:'PUT',
+        const res = await fetch(baseUrl+'/'+task_id,{
+            method:'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body:JSON.stringify(
                 {
-                    title,description
+                    title:title,
+                    description:description,
+                    is_done:is_done
                 }
             )
         });
@@ -75,7 +112,7 @@ const update_task=async(task_id,title,description)=>{
 
 const get_one_task=async(task_id)=>{
     try{
-        const res = await fetch(baseUrl+task_id,{
+        const res = await fetch(baseUrl+'/'+task_id,{
             method:"GET",
         });
         if (res.ok) return res.json()
@@ -85,3 +122,5 @@ const get_one_task=async(task_id)=>{
         console.log(e)
     }
 }
+
+export {get_all_tasks,add_task,delete_task,update_task,get_one_task,toggle_task}
